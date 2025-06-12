@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>URL Loader App</title>
+    <style>
+      #table-container {
+        max-height: 800px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        margin: 15px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead {
+        background-color: #f0f0f0;
+        position: sticky;
+        top: 0;
+      }
+      th,
+      td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      button {
+        padding: 4px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Enter a URL and Load Data</h1>
+
+    <input type="text" id="url-input" placeholder="Enter URL here" />
+    <button onclick="loadData()">Load</button>
+
+    <div id="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Title</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Dynamic rows will appear here -->
+        </tbody>
+      </table>
+    </div>
+
+    <select name="format-select" id="format-select">
+      <option value="mp3" selected>MP3</option>
+      <option value="wav">WAV</option>
+      <option value="flac">FLAC</option>
+    </select>
+
+    <button onclick="downloadAll()">Download all</button>
+    <button onclick="downloadSelected()">Download selected</button>
+
+    <script>
+      async function loadData() {
+        const urlInput = document.getElementById("url-input").value;
+
+        try {
+          const response = await fetch("/load", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: urlInput }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          const tableBody = document.getElementById("table-body");
+          tableBody.innerHTML = ""; // Clear previous results
+
+          data.forEach((item, index) => {
+            const row = document.createElement("tr");
+
+            const checkboxCell = document.createElement("td");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `item-${index}`;
+            checkboxCell.appendChild(checkbox);
+
+            const titleCell = document.createElement("td");
+            titleCell.textContent = item.title;
+
+            const downloadCell = document.createElement("td");
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Download';
+            downloadButton.setAttribute('data-url', item.url);
+            downloadButton.setAttribute('data-title', item.title);
+            downloadButton.onclick = () => download(item, getSelectedFormat());
+            downloadCell.appendChild(downloadButton);
+
+            row.appendChild(checkboxCell);
+            row.appendChild(titleCell);
+            row.appendChild(downloadCell);
+
+            tableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error loading data:", error);
+          alert("Failed to load data. Check the console for details.");
+        }
+      }
+
+      function getSelectedFormat() {
+        const formatSelect = document.getElementById("format-select");
+        return formatSelect.value;
+      }
+
+      async function sendDownloadRequest(urls, format) {
+        try {
+          const response = await fetch("/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: urls, format: format, dest_folder: "Download"}),
+          });
+
+          const result = await response;
+
+          if (response.ok) {
+            alert(result.message);
+          } else {
+            alert(`Error: ${result.message}`);
+          }
+        } catch (error) {
+          console.error("Download request failed:", error);
+          alert("Failed to start download.");
+        }
+      }
+
+      function downloadAll() {
+        const format = getSelectedFormat();
+        const tableBody = document.getElementById("table-body");
+        const rows = tableBody.getElementsByTagName("tr");
+
+        if (rows.length === 0) {
+          alert("No items to download.");
+          return;
+        }
+
+        const list = [];
+
+        for (const row of rows) {
+           const url = row.querySelector("button").getAttribute("data-url");
+           const title = row.querySelector("button").getAttribute("data-title");
+           
+            list.push({
+                'url' : url,
+                'title' : title
+            });
+        }
+
+        sendDownloadRequest(list, format);
+      }
+
+      function downloadSelected() {
+        const format = getSelectedFormat();
+        const tableBody = document.getElementById("table-body");
+        const rows = tableBody.getElementsByTagName("tr");
+        const list = [];
+
+        for (const row of rows) {
+          const checkbox = row.querySelector('input[type="checkbox"]');
+          if (checkbox && checkbox.checked) {
+            const url = row.querySelector("button").getAttribute("data-url");
+            const title = row.querySelector("button").getAttribute("data-title");
+            list.push({
+                'url' : url,
+                'title' : title
+            });
+          }
+        }
+
+        console.log(list)
+
+        if (list.length === 0) {
+          alert("No items selected.");
+          return;
+        }
+
+        sendDownloadRequest(list, format);
+      }
+    </script>
+  </body>
+</html>
