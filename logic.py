@@ -54,12 +54,25 @@ def download_url_list(urls, format, dest_folder):
         }],
         'outtmpl': dest_folder+'/%(title)s.%(ext)s',
     }
+    
+    success_counter = 0
+    fail_counter = 0
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         for url in urls:
             print(url)
             try:
                 print(f"Downloading: {url['title']}")
-                ydl.download(url['url'])
+                dl_result = ydl.download(url['url'])
+                
+                if(dl_result == 0):
+                    success_counter+=1
+                else:
+                    fail_counter+=1
+                    
             except Exception as e:
+                fail_counter+=1
                 print(f"Failed to download: {e}")
+                pass
+            
+        return "Download finished. "+ str(success_counter)+ " downloaded. "+ str(fail_counter) + " failed."

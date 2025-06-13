@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 from logic import load_playlist
 from logic import download_url_list
+import webbrowser
+
 
 
 app = Flask(__name__)
@@ -29,9 +31,10 @@ def download_urls():
 
     dest_folder = './downloads'
 
-    download_url_list(urls, format, dest_folder)
+    return download_url_list(urls, format, dest_folder), 200
 
-    return {'status': 'success', 'message': f'Downloaded {len(urls)} files in {format} format.'}
+
+webbrowser.open("http://127.0.0.1:5000", new=1, autoraise=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
