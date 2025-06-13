@@ -3,64 +3,289 @@
   <head>
     <title>URL Loader App</title>
     <style>
-      #table-container {
-        max-height: 800px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        margin: 15px 0;
+      /* Orbitron Font */
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap");
+
+      body {
+        background-color: #0a0a0a;
+        color: #e0e0e0;
+        font-family: "Orbitron", sans-serif;
+        padding: 20px;
       }
+
+      /* Button */
+      button {
+        background: linear-gradient(45deg, #1b1f1b, #181429);
+        color: #e0e0e0;
+        border: 2px solid #ffffff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 0 0 6px #ffffff;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background: linear-gradient(45deg, #181429, #1b1f1b);
+        box-shadow: 0 0 10px #b570ff;
+        cursor: pointer;
+      }
+
+      /* Select */
+      select {
+        background: linear-gradient(45deg, #1b1f1b, #181429);
+        color: #e0e0e0;
+        border: 2px solid #ffffff;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 0 0 6px #ffffff;
+        transition: all 0.3s ease;
+      }
+
+      select:focus {
+        outline: none;
+        box-shadow: 0 0 10px #ffffff;
+      }
+
+      select:hover {
+        background: #121212;
+        border: 2px solid #b570ff;
+        box-shadow: 0 0 6px #b570ff;
+        transition: all 0.3s ease;
+      }
+
+      select option {
+        background: #121212;
+        color: #e0e0e0;
+      }
+
+      /* Textbox */
+      input[type="text"] {
+        background: linear-gradient(45deg, #1b1f1b, #181429);
+        color: #e0e0e0;
+        border: 2px solid #ffffff;
+        border-radius: 6px;
+        font-size: 16px;
+        box-shadow: 0 0 6px #ffffff;
+        transition: all 0.3s ease;
+        text-indent: 16px;
+      }
+
+      button,
+      input,
+      select {
+        height: 48px;
+      }
+
+      input[type="text"] {
+        height: 0;
+        padding: 20px 10px;
+        line-height: 28px;
+        padding: 22px 0;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #b570ff;
+        box-shadow: 0 0 8px #b570ff inset;
+      }
+
+      /* Table headers and cells */
       table {
-        width: 100%;
         border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 0 12px #ffffff;
       }
-      thead {
-        background-color: #f0f0f0;
-        position: sticky;
-        top: 0;
-      }
+
       th,
       td {
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-        text-align: center;
+        border: 1px solid #282828;
+        padding: 12px 18px;
+        text-align: left;
+        color: #e0e0e0;
+        background-color: #121212;
       }
-      tr:last-child td {
-        border-bottom: none;
+
+      th {
+        background: linear-gradient(45deg, #181429, #1b1f1b);
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 8px #ffffff;
       }
-      button {
-        padding: 4px 8px;
+
+      td {
+        box-shadow: inset 0 0 2px #282828;
+      }
+
+      /* Cursor pointer on hover for interactive elements */
+      button:hover,
+      select:hover {
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #121212;
+        border: 2px solid #b570ff;
+        box-shadow: 0 0 6px #b570ff;
+        appearance: none;
+        transition: all 0.3s ease;
+      }
+
+      .control {
+        font-family: arial;
+        display: block;
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 5px;
+        padding-top: 3px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .control input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+      }
+      .control_indicator {
+        position: absolute;
+        top: 2px;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background: #e6e6e6;
+        border: 0px solid #000000;
+        border-radius: 5px;
+      }
+      .control:hover input ~ .control_indicator,
+      .control input:focus ~ .control_indicator {
+        background: #cccccc;
+      }
+
+      .control input:checked ~ .control_indicator {
+        background: #b570ff;
+      }
+
+      .control:hover input:not([disabled]):checked ~ .control_indicator,
+      .control input:checked:focus ~ .control_indicator {
+        background: #0e6647d;
+      }
+      .control input:disabled ~ .control_indicator {
+        background: #e6e6e6;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .control_indicator:after {
+        box-sizing: unset;
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      .control input:checked ~ .control_indicator:after {
+        display: block;
+      }
+      .control-checkbox .control_indicator:after {
+        left: 8px;
+        top: 4px;
+        width: 3px;
+        height: 8px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .control-checkbox input:disabled ~ .control_indicator:after {
+        border-color: #7b7b7b;
+      }
+      .control-checkbox .control_indicator::before {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4.5rem;
+        height: 4.5rem;
+        margin-left: -1.3rem;
+        margin-top: -1.3rem;
+        background: #ffffffd4;
+        border-radius: 3rem;
+        opacity: 0.6;
+        z-index: 99999;
+        transform: scale(0);
       }
     </style>
   </head>
   <body>
-    <h1>Enter a URL and Load Data</h1>
+    <center>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          margin: 8px;
+          padding: 8px 0;
+          width: 600px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            margin: 8px 0;
+            justify-content: space-between;
+          "
+        >
+          <input
+            type="text"
+            id="url-input"
+            placeholder="Enter YouTube playlist URL here"
+            style="width: 70%"
+          />
+          <button onclick="loadData()" style="width: 28%">Load</button>
+        </div>
 
-    <input type="text" id="url-input" placeholder="Enter URL here" />
-    <button onclick="loadData()">Load</button>
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            margin: 8px 0;
+            justify-content: space-between;
+          "
+        >
+          <select name="format-select" id="format-select" style="width: 18%">
+            <option value="mp3" selected>MP3</option>
+            <option value="wav">WAV</option>
+            <option value="flac">FLAC</option>
+          </select>
 
-    <div id="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th>Title</th>
-            <th>Download</th>
-          </tr>
-        </thead>
-        <tbody id="table-body">
-          <!-- Dynamic rows will appear here -->
-        </tbody>
-      </table>
-    </div>
+          <button onclick="downloadAll()" style="width: 34%">
+            Download all
+          </button>
+          <button onclick="downloadSelected()" style="width: 45%">
+            Download selected
+          </button>
+        </div>
+      </div>
 
-    <select name="format-select" id="format-select">
-      <option value="mp3" selected>MP3</option>
-      <option value="wav">WAV</option>
-      <option value="flac">FLAC</option>
-    </select>
-
-    <button onclick="downloadAll()">Download all</button>
-    <button onclick="downloadSelected()">Download selected</button>
+      <div id="table-container" style="display: none">
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Title</th>
+              <th>Download</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </center>
 
     <script>
       async function loadData() {
@@ -86,19 +311,31 @@
             const row = document.createElement("tr");
 
             const checkboxCell = document.createElement("td");
+
+            const checkBoxLabel = document.createElement("label");
+            checkBoxLabel.classList.add("control");
+            checkBoxLabel.classList.add("control-checkbox");
+
+            const controlIndicator = document.createElement("div");
+            controlIndicator.classList.add("control_indicator");
+
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `item-${index}`;
-            checkboxCell.appendChild(checkbox);
+
+            checkBoxLabel.appendChild(checkbox);
+            checkBoxLabel.appendChild(controlIndicator);
+
+            checkboxCell.appendChild(checkBoxLabel);
 
             const titleCell = document.createElement("td");
             titleCell.textContent = item.title;
 
             const downloadCell = document.createElement("td");
-            const downloadButton = document.createElement('button');
-            downloadButton.textContent = 'Download';
-            downloadButton.setAttribute('data-url', item.url);
-            downloadButton.setAttribute('data-title', item.title);
+            const downloadButton = document.createElement("button");
+            downloadButton.textContent = "Download";
+            downloadButton.setAttribute("data-url", item.url);
+            downloadButton.setAttribute("data-title", item.title);
             downloadButton.onclick = () => download(item, getSelectedFormat());
             downloadCell.appendChild(downloadButton);
 
@@ -107,6 +344,8 @@
             row.appendChild(downloadCell);
 
             tableBody.appendChild(row);
+
+            document.getElementById("table-container").style.display = "block";
           });
         } catch (error) {
           console.error("Error loading data:", error);
@@ -124,7 +363,11 @@
           const response = await fetch("/download", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ urls: urls, format: format, dest_folder: "Download"}),
+            body: JSON.stringify({
+              urls: urls,
+              format: format,
+              dest_folder: "Download",
+            }),
           });
 
           const result = await response;
@@ -153,13 +396,13 @@
         const list = [];
 
         for (const row of rows) {
-           const url = row.querySelector("button").getAttribute("data-url");
-           const title = row.querySelector("button").getAttribute("data-title");
-           
-            list.push({
-                'url' : url,
-                'title' : title
-            });
+          const url = row.querySelector("button").getAttribute("data-url");
+          const title = row.querySelector("button").getAttribute("data-title");
+
+          list.push({
+            url: url,
+            title: title,
+          });
         }
 
         sendDownloadRequest(list, format);
@@ -175,15 +418,17 @@
           const checkbox = row.querySelector('input[type="checkbox"]');
           if (checkbox && checkbox.checked) {
             const url = row.querySelector("button").getAttribute("data-url");
-            const title = row.querySelector("button").getAttribute("data-title");
+            const title = row
+              .querySelector("button")
+              .getAttribute("data-title");
             list.push({
-                'url' : url,
-                'title' : title
+              url: url,
+              title: title,
             });
           }
         }
 
-        console.log(list)
+        console.log(list);
 
         if (list.length === 0) {
           alert("No items selected.");
