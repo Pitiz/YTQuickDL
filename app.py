@@ -2,8 +2,9 @@ from flask import Flask, request, jsonify, render_template
 from logic import load_playlist
 from logic import download_url_list
 import webbrowser
-
-
+from flask import send_from_directory
+import os
+from threading import Timer
 
 app = Flask(__name__)
 
@@ -11,6 +12,10 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',mimetype='image/vnd.microsoft.icon')
+    
 @app.route('/load', methods=['POST'])
 def load_data():
     data = request.json
@@ -34,7 +39,9 @@ def download_urls():
     return download_url_list(urls, format, dest_folder), 200
 
 
-webbrowser.open("http://127.0.0.1:5000", new=1, autoraise=True)
+def open_browser():
+      webbrowser.open_new("http://127.0.0.1:5000")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    Timer(1, open_browser).start()
     app.run(debug=True)
