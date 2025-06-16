@@ -37,40 +37,40 @@ def download_urls():
     threads = []
     data = request.json
     urls = data.get('urls')
-    
     format = data.get('format')
 
+    dest_folder = data.get('dest_folder')
+
+    if not dest_folder:
+        dest_folder = "Downloads"
+        
     if not urls or not format:
         return {'status': 'error', 'message': 'Missing URLs or format.'}, 400
 
-    dest_folder = './downloads'
-    
     for item in urls:
         t = threading.Thread(target=handle_download, args=(item, format, dest_folder))
         t.start()
         threads.append(t)
+
+    for t in threads:
+        t.join()
         
-    return {'status': 'success', 'message': 'Download started.'}, 200
+    return {'status': 'success', 'message': 'Download completed.'}, 200
 
-
-@app.route('/progress/<id>')
+@app.route('/progress/<id>', methods=['GET'])
 def progress_stream(id):
-    def generate():
-        while True:
-            if(progress_data is None or not progress_data):
-                pass
-            
-            percentage = str(progress_data[str(id)])
-            yield f"data: {percentage}\n\n"
-            if percentage == '100.0%' or percentage == "FAILED":
-                break
-            time.sleep(0.2)
-    return Response(generate(), mimetype='text/event-stream')
+    if progress_data is None or not progress_data:
+        return Response("No data", 401)
+    
+    if id not in progress_data:
+        return Response("Not found", 404)
+    
+    percentage = str(progress_data[id])
+    return percentage, 200
 
 def open_browser():
       webbrowser.open_new("http://127.0.0.1:5000")
       
-
 def load_playlist(playlist_url):
     ydl_opts = {
         'quiet': True,
@@ -88,8 +88,7 @@ def load_playlist(playlist_url):
             'title' : video['title']
         })
 
-    print(f"Number of videos loaded from playlist: {len(urls)}")
-    
+    # print(f"Number of videos loaded from playlist: {len(urls)}")
     return urls
     
 progress_data = {}
@@ -121,9 +120,6 @@ def download_url(item, format, dest_folder):
         }],
         'outtmpl': dest_folder+'/%(title)s.%(ext)s',
     }
-    
-    success_counter = 0
-    fail_counter = 0
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
@@ -132,15 +128,11 @@ def download_url(item, format, dest_folder):
                 dl_result = ydl.download(item['url'])
             
                 if(dl_result == 0):
-                    success_counter+=1
                     progress_data[item['id']] = '100.0%'
                 else:
-                    fail_counter+=1
                     progress_data[item['id']] = 'FAILED'
                 
         except Exception as e:
-            with counter_lock:
-                fail_counter+=1
             print(f"Failed to download: {e}")
             pass
 
