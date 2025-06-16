@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>YouTube Downloadr</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico?v=1.1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=1.1" />
 
     <style>
       * {
@@ -366,6 +366,8 @@ __  __           ______      __            ____                      __         
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `item-${index}`;
+            checkbox.setAttribute("data-url", item.url);
+            checkbox.setAttribute("data-title", item.title);
 
             checkBoxLabel.appendChild(checkbox);
             checkBoxLabel.appendChild(controlIndicator);
@@ -375,8 +377,11 @@ __  __           ______      __            ____                      __         
             const titleCell = document.createElement("td");
             titleCell.textContent = item.title;
 
+            const percentCell = document.createElement("td");
+
             row.appendChild(checkboxCell);
             row.appendChild(titleCell);
+            row.appendChild(percentCell);
 
             tableBody.appendChild(row);
 
@@ -444,10 +449,8 @@ __  __           ______      __            ____                      __         
         for (const row of rows) {
           const checkbox = row.querySelector('input[type="checkbox"]');
           if (checkbox && checkbox.checked) {
-            const url = row.querySelector("button").getAttribute("data-url");
-            const title = row
-              .querySelector("button")
-              .getAttribute("data-title");
+            const url = checkbox.getAttribute("data-url");
+            const title = checkbox.getAttribute("data-title");
             list.push({
               url: url,
               title: title,
@@ -464,6 +467,12 @@ __  __           ______      __            ____                      __         
 
         sendDownloadRequest(list, format);
       }
+
+      const evtSource = new EventSource("/progress");
+      evtSource.onmessage = function (event) {
+        console.log("Download progress:", event.data);
+        document.getElementById("progress").innerText = event.data;
+      };
     </script>
   </body>
 </html>
