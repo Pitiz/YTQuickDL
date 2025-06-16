@@ -73,7 +73,7 @@
         color: #e0e0e0;
         border: 2px solid #ffffffab;
         border-radius: 6px;
-        font-size: 16px;
+        font-size: 10px;
         box-shadow: 0 0 6px #ffffffab;
         transition: all 0.3s ease;
         text-indent: 16px;
@@ -192,6 +192,11 @@
       .control input:checked ~ .control_indicator:after {
         display: block;
       }
+
+      .control-checkbox {
+        width: 1px;
+        height: 1px;
+      }
       .control-checkbox .control_indicator:after {
         left: 8px;
         top: 4px;
@@ -283,7 +288,7 @@ __  __           ______      __            ____                      __         
             id="url-input"
             placeholder="Enter YouTube playlist URL here"
             style="width: 70%"
-            value=""
+            value="https://www.youtube.com/playlist?list=PLvVPkQOroUKh8zRQK3lZEMMWmgrleke_y"
           />
           <button onclick="loadData()" style="width: 28%">Load</button>
         </div>
@@ -315,8 +320,9 @@ __  __           ______      __            ____                      __         
         <table>
           <thead>
             <tr>
-              <th>Select</th>
+              <th style="width: 1px">Select</th>
               <th>Title</th>
+              <th style="width: 85px">Download %</th>
             </tr>
           </thead>
           <tbody id="table-body"></tbody>
@@ -355,6 +361,9 @@ __  __           ______      __            ____                      __         
             const row = document.createElement("tr");
 
             const checkboxCell = document.createElement("td");
+            checkboxCell.style.display = "flex";
+            checkboxCell.style.width = "auto";
+            checkboxCell.style.justifyContent = "center";
 
             const checkBoxLabel = document.createElement("label");
             checkBoxLabel.classList.add("control");
@@ -366,6 +375,7 @@ __  __           ______      __            ____                      __         
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `item-${index}`;
+            checkbox.setAttribute("data-id", index);
             checkbox.setAttribute("data-url", item.url);
             checkbox.setAttribute("data-title", item.title);
 
@@ -377,11 +387,13 @@ __  __           ______      __            ____                      __         
             const titleCell = document.createElement("td");
             titleCell.textContent = item.title;
 
-            const percentCell = document.createElement("td");
+            const progressCell = document.createElement("td");
+            progressCell.textContent = "";
+            progressCell.id = "progress_" + index;
 
             row.appendChild(checkboxCell);
             row.appendChild(titleCell);
-            row.appendChild(percentCell);
+            row.appendChild(progressCell);
 
             tableBody.appendChild(row);
 
@@ -401,6 +413,19 @@ __  __           ______      __            ____                      __         
 
       async function sendDownloadRequest(urls, format) {
         try {
+          console.log("Entrato")
+          urls.forEach((url) => {
+            const evtSource = new EventSource("/progress/" + url.id);
+
+            evtSource.onmessage = function (event) {
+              console.log("EVENTO ARRIVATO!!!!!");
+              document.getElementById("progress_" + url.id).innerText = event.data;
+              if (event.data === "100.0%" || event.data === "FAILED") {
+                evtSource.close();
+              }
+            };
+          });
+
           const response = await fetch("/download", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -449,9 +474,12 @@ __  __           ______      __            ____                      __         
         for (const row of rows) {
           const checkbox = row.querySelector('input[type="checkbox"]');
           if (checkbox && checkbox.checked) {
+            const id = checkbox.getAttribute("data-id");
             const url = checkbox.getAttribute("data-url");
             const title = checkbox.getAttribute("data-title");
+
             list.push({
+              id: id,
               url: url,
               title: title,
             });
@@ -467,12 +495,6 @@ __  __           ______      __            ____                      __         
 
         sendDownloadRequest(list, format);
       }
-
-      const evtSource = new EventSource("/progress");
-      evtSource.onmessage = function (event) {
-        console.log("Download progress:", event.data);
-        document.getElementById("progress").innerText = event.data;
-      };
     </script>
   </body>
 </html>
