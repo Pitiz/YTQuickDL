@@ -1,22 +1,23 @@
 function CheckBoxesChecked() {
-    if (document.querySelectorAll(".control input:checked").length > 0) {
-        document.getElementById("download_button").style.background = "#21592473";
-    } else {
-        document.getElementById("download_button").style.background = "#231d3e73";
-    }
+    if (document.querySelectorAll(".control input:checked").length > 0)
+        $("#download_button").css("background", "#21592473");
+    else
+        $("#download_button").css("background", "#231d3e73");
 }
+
+var dataLoaded = false
+
 async function loadData() {
-    const urlInput = document.getElementById("url-input").value;
+    const urlInput = $("#url-input").val();
 
     if (urlInput == "" || urlInput == null) {
         alert("Invalid URL");
         return;
     }
 
-    document.getElementById("download_finished").innerText = "";
-    document.getElementById("loaded_values").innerText = "";
-
-    document.getElementById("loader").style.display = "block";
+    $("#download_finished").html("");
+    $("#loaded_values").html("");
+    $("#loader").css("display", "block");
 
     try {
         const response = await fetch("/load", {
@@ -25,14 +26,14 @@ async function loadData() {
             body: JSON.stringify({ url: urlInput }),
         });
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error(`HTTP error! Status: ${response.status}`);
-        }
 
         const data = await response.json();
 
         draw_table(data);
 
+        dataLoaded = true;
     } catch (error) {
         console.error("Error loading data:", error);
         alert("Failed to load data. Check the console for details.");
@@ -40,62 +41,63 @@ async function loadData() {
 }
 
 function draw_table(data) {
-    const tableBody = document.getElementById("table-body");
-    tableBody.innerHTML = ""; // Clear previous results
+    const tableBody = $("#table-body");
+    tableBody.html(""); // Clear previous results
 
     data.forEach((item, index) => {
-        const row = document.createElement("tr");
+        const row = $("<tr></tr>");
 
-        const checkboxCell = document.createElement("td");
-        checkboxCell.style.display = "flex";
-        checkboxCell.style.width = "auto";
-        checkboxCell.style.justifyContent = "center";
+        const checkboxCell = $("<td></td>");
+        checkboxCell.css("display", "flex");
+        checkboxCell.css("width", "auto");
+        checkboxCell.css("justify-content", "center");
 
-        const checkBoxLabel = document.createElement("label");
-        checkBoxLabel.classList.add("control");
-        checkBoxLabel.classList.add("control-checkbox");
+        const checkBoxLabel = $("<label></label>");
+        checkBoxLabel.addClass("control");
+        checkBoxLabel.addClass("control-checkbox");
 
-        const controlIndicator = document.createElement("div");
-        controlIndicator.classList.add("control_indicator");
+        const controlIndicator = $("<div></div>");
+        controlIndicator.addClass("control_indicator");
 
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `item-${index}`;
-        checkbox.setAttribute("data-id", index);
-        checkbox.setAttribute("data-url", item.url);
-        checkbox.setAttribute("data-title", item.title);
-        checkbox.addEventListener("change", function () {
+        const checkbox = $("<input>", {
+            type: 'checkbox',
+        });
+
+        checkbox.attr("data-id", index);
+        checkbox.attr("data-url", item.url);
+        checkbox.attr("data-title", item.title);
+
+        checkbox.on("change", function () {
             CheckBoxesChecked();
         });
 
-        checkBoxLabel.appendChild(checkbox);
-        checkBoxLabel.appendChild(controlIndicator);
+        checkBoxLabel.append(checkbox);
+        checkBoxLabel.append(controlIndicator);
 
-        checkboxCell.appendChild(checkBoxLabel);
+        checkboxCell.append(checkBoxLabel);
 
-        const titleCell = document.createElement("td");
-        titleCell.textContent = item.title;
+        const titleCell = $("<td>").html(item.title);
 
-        const progressCell = document.createElement("td");
-        progressCell.textContent = "";
-        progressCell.id = "progress_" + index;
+        const progressCell = $("<td>", {
+            id: "progress_" + index
+        });
 
-        row.appendChild(checkboxCell);
-        row.appendChild(titleCell);
-        row.appendChild(progressCell);
+        row.append(checkboxCell);
+        row.append(titleCell);
+        row.append(progressCell);
 
-        tableBody.appendChild(row);
+        tableBody.append(row);
 
-        document.getElementById("table-container").style.display = "block";
-        document.getElementById("loader").style.display = "none";
+        $("#table-container").css("display", "block");
+        $("#loader").css("display", "none");
     });
 
-    document.getElementById("loaded_values").innerText = "Loaded " + data.length + " videos.";
+    $("#loaded_values").html("Loaded " + data.length + " videos.");
 }
 
 function getSelectedFormat() {
-    const formatSelect = document.getElementById("format-select");
-    return formatSelect.value;
+    const formatSelect = $("#format-select");
+    return formatSelect.val();
 }
 
 async function sendDownloadRequest(urls, format) {
@@ -106,15 +108,14 @@ async function sendDownloadRequest(urls, format) {
             body: JSON.stringify({
                 urls: urls,
                 format: format,
-                dest_folder: document.getElementById("dest_folder").value,
+                dest_folder: $("#dest_folder").val(),
             }),
         })
             .then((response) => response.text())
             .then((data) => {
                 let parsed = JSON.parse(data);
-                if (parsed['status'] == "success") {
-                    document.getElementById("download_finished").innerText = parsed['message']
-                }
+                if (parsed['status'] == "success")
+                    $("#download_finished").html(parsed['message'])
             })
             .catch((error) => {
                 alert("Error:", error);
@@ -137,13 +138,12 @@ function processUrlsSequentially(urls) {
             const interval = setInterval(() => {
                 fetch("/progress/" + item.id, { method: "GET" })
                     .then(response => {
-                        if (!response.ok) {
+                        if (!response.ok)
                             throw new Error("Network response was not ok");
-                        }
                         return response.text();
                     })
                     .then(data => {
-                        document.getElementById("progress_" + item.id).innerText = data;
+                        $("#progress_" + item.id).html(data);
                         if (data === "100.0%" || data === "FAILED") {
                             clearInterval(interval);
                             resolve();
@@ -182,8 +182,8 @@ function processUrlsSequentially(urls) {
 
 function selectAll() {
     const format = getSelectedFormat();
-    const tableBody = document.getElementById("table-body");
-    const rows = tableBody.getElementsByTagName("tr");
+    const tableBody = $("#table-body");
+    const rows = $(tableBody).find("tr");
 
     if (rows.length === 0) {
         alert("No items to select.");
@@ -199,8 +199,8 @@ function selectAll() {
 
 function downloadSelected() {
     const format = getSelectedFormat();
-    const tableBody = document.getElementById("table-body");
-    const rows = tableBody.getElementsByTagName("tr");
+    const tableBody = $("#table-body");
+    const rows = $(tableBody).find("tr");
     const list = [];
 
     for (const row of rows) {
@@ -226,6 +226,8 @@ function downloadSelected() {
     sendDownloadRequest(list, format);
 }
 
-window.onbeforeunload = function() {
-  return "Are you sure you want to leave? Data will be lost.";
+window.onbeforeunload = function () {
+    if(dataLoaded === false)
+        return undefined
+    return "Are you sure you want to leave? Data will be lost.";
 };

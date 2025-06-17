@@ -1,14 +1,13 @@
 * {
-    font-family: monospace;
+    font-family: monospace
 }
 
 body {
     background-color: #0a0a0a;
     color: #e0e0e0;
-    padding: 20px;
+    padding: 20px
 }
 
-/* Button */
 button {
     background: #231d3e73;
     color: #e0e0e0;
@@ -20,16 +19,15 @@ button {
     letter-spacing: 1px;
     cursor: pointer;
     box-shadow: 0 0 6px #ffffffab;
-    transition: all 0.3s ease;
+    transition: all .3s ease
 }
 
 button:hover {
     background: linear-gradient(45deg, #181429, #1b1f1b);
     box-shadow: 0 0 10px #b570ff;
-    cursor: pointer;
+    cursor: pointer
 }
 
-/* Select */
 select {
     background: #231d3e73;
     color: #e0e0e0;
@@ -41,27 +39,26 @@ select {
     letter-spacing: 1px;
     cursor: pointer;
     box-shadow: 0 0 6px #ffffffab;
-    transition: all 0.3s ease;
+    transition: all .3s ease
 }
 
 select:focus {
     outline: none;
-    box-shadow: 0 0 10px #ffffff;
+    box-shadow: 0 0 10px #ffffff
 }
 
 select:hover {
     background: #121212;
     border: 2px solid #b570ff;
     box-shadow: 0 0 6px #b570ff;
-    transition: all 0.3s ease;
+    transition: all .3s ease
 }
 
 select option {
     background: #121212;
-    color: #e0e0e0;
+    color: #e0e0e0
 }
 
-/* Textbox */
 input[type="text"] {
     background: #231d3e73;
     color: #e0e0e0;
@@ -69,35 +66,34 @@ input[type="text"] {
     border-radius: 6px;
     font-size: 10px;
     box-shadow: 0 0 6px #ffffffab;
-    transition: all 0.3s ease;
-    text-indent: 16px;
+    transition: all .3s ease;
+    text-indent: 16px
 }
 
 button,
 input,
 select {
-    height: 48px;
+    height: 48px
 }
 
 input[type="text"] {
     height: 0;
     padding: 20px 10px;
     line-height: 28px;
-    padding: 22px 0;
+    padding: 22px 0
 }
 
 input[type="text"]:focus {
     outline: none;
     border-color: #b570ff;
-    box-shadow: 0 0 8px #b570ff inset;
+    box-shadow: 0 0 8px #b570ff inset
 }
 
-/* Table headers and cells */
 table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 20px;
-    box-shadow: 0 0 12px #ffffff;
+    box-shadow: 0 0 12px #ffffff
 }
 
 th,
@@ -106,7 +102,7 @@ td {
     padding: 12px 18px;
     text-align: left;
     color: #e0e0e0;
-    background-color: #121212;
+    background-color: #121212
 }
 
 th {
@@ -114,17 +110,16 @@ th {
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 1px;
-    box-shadow: 0 0 8px #ffffff;
+    box-shadow: 0 0 8px #ffffff
 }
 
 td {
-    box-shadow: inset 0 0 2px #282828;
+    box-shadow: inset 0 0 2px #282828
 }
 
-/* Cursor pointer on hover for interactive elements */
 button:hover,
 select:hover {
-    cursor: pointer;
+    cursor: pointer
 }
 
 button:hover {
@@ -132,7 +127,7 @@ button:hover {
     border: 2px solid #b570ff;
     box-shadow: 0 0 6px #b570ff;
     appearance: none;
-    transition: all 0.3s ease;
+    transition: all .3s ease
 }
 
 .control {
@@ -142,13 +137,13 @@ button:hover {
     margin-bottom: 5px;
     cursor: pointer;
     font-size: 16px;
-    padding: 12px;
+    padding: 12px
 }
 
 .control input {
     position: absolute;
     z-index: -1;
-    opacity: 0;
+    opacity: 0
 }
 
 .control_indicator {
@@ -158,44 +153,44 @@ button:hover {
     height: 20px;
     width: 20px;
     background: #e6e6e6;
-    border: 0px solid #000000;
-    border-radius: 5px;
+    border: 0 solid #000000;
+    border-radius: 5px
 }
 
 .control:hover input~.control_indicator,
 .control input:focus~.control_indicator {
-    background: #cccccc;
+    background: #cccccc
 }
 
 .control input:checked~.control_indicator {
-    background: #b570ff;
+    background: #b570ff
 }
 
 .control:hover input:not([disabled]):checked~.control_indicator,
 .control input:checked:focus~.control_indicator {
-    background: #0e6647d;
+    background: #0e6647d
 }
 
 .control input:disabled~.control_indicator {
     background: #e6e6e6;
-    opacity: 0.6;
-    pointer-events: none;
+    opacity: .6;
+    pointer-events: none
 }
 
 .control_indicator:after {
     box-sizing: unset;
     content: "";
     position: absolute;
-    display: none;
+    display: none
 }
 
 .control input:checked~.control_indicator:after {
-    display: block;
+    display: block
 }
 
 .control-checkbox {
     width: 1px;
-    height: 1px;
+    height: 1px
 }
 
 .control-checkbox .control_indicator:after {
@@ -205,11 +200,11 @@ button:hover {
     height: 8px;
     border: solid #ffffff;
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    transform: rotate(45deg)
 }
 
 .control-checkbox input:disabled~.control_indicator:after {
-    border-color: #7b7b7b;
+    border-color: #7b7b7b
 }
 
 .control-checkbox .control_indicator::before {
@@ -224,42 +219,42 @@ button:hover {
     margin-top: -1.3rem;
     background: #ffffffd4;
     border-radius: 3rem;
-    opacity: 0.6;
+    opacity: .6;
     z-index: 99999;
-    transform: scale(0);
+    transform: scale(0)
 }
 
 #loader {
     width: 45px;
-    aspect-ratio: 0.75;
+    aspect-ratio: .75;
     --c: no-repeat linear-gradient(#4d466b 0 0);
     background: var(--c) 0% 50%, var(--c) 50% 50%, var(--c) 100% 50%;
-    animation: l7 1s infinite linear alternate;
+    animation: l7 1s infinite linear alternate
 }
 
 @keyframes l7 {
     0% {
-        background-size: 20% 50%, 20% 50%, 20% 50%;
+        background-size: 20% 50%, 20% 50%, 20% 50%
     }
 
     20% {
-        background-size: 20% 20%, 20% 50%, 20% 50%;
+        background-size: 20% 20%, 20% 50%, 20% 50%
     }
 
     40% {
-        background-size: 20% 100%, 20% 20%, 20% 50%;
+        background-size: 20% 100%, 20% 20%, 20% 50%
     }
 
     60% {
-        background-size: 20% 50%, 20% 100%, 20% 20%;
+        background-size: 20% 50%, 20% 100%, 20% 20%
     }
 
     80% {
-        background-size: 20% 50%, 20% 50%, 20% 100%;
+        background-size: 20% 50%, 20% 50%, 20% 100%
     }
 
     100% {
-        background-size: 20% 50%, 20% 50%, 20% 50%;
+        background-size: 20% 50%, 20% 50%, 20% 50%
     }
 }
 
@@ -276,7 +271,7 @@ button:hover {
     padding: 10px;
     line-height: 10px;
     padding: 8px 0;
-    text-indent: 8px;
+    text-indent: 8px
 }
 
 #loaded_values {
@@ -295,7 +290,7 @@ button:hover {
     display: flex;
     flex-direction: row;
     margin: 8px 0;
-    justify-content: space-between;
+    justify-content: space-between
 }
 
 .column-container {
@@ -303,5 +298,5 @@ button:hover {
     flex-direction: column;
     margin: 8px;
     padding: 8px 0;
-    width: 600px;
+    width: 600px
 }

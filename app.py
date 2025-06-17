@@ -21,15 +21,7 @@ def load_data():
     data = request.json
     url = data.get('url')
     result = load_playlist(url)
-    session['loaded_data'] = result
     return jsonify(result)
-
-@app.route('/reload', methods=['POST'])
-def reload_data():
-    data = session.get('loaded_data')  # safely fetch with default None
-    if data is None:
-        return jsonify({'error': 'No data loaded yet'}), 404
-    return jsonify(data)
 
 def handle_download(item, format, dest_folder):
     print("Started download for " + str(item['id']))
