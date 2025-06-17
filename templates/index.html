@@ -49,7 +49,7 @@ __  __           ______      __            ____                      __         
         </div>
 
         <div class="row-container">
-          <div style="display: flex; flex-direction: column; text-align: start;">
+          <div style="display: flex; flex-direction: column; text-align: start">
             <p id="loaded_values"></p>
             <p id="download_finished"></p>
           </div>
@@ -59,6 +59,27 @@ __  __           ______      __            ____                      __         
               >Target folder</label
             >
             <input type="text" id="dest_folder" value="Downloads" />
+          </div>
+        </div>
+      </div>
+
+      <div class="column-container">
+        <div class="row-container">
+          <input
+            type="text"
+            id="url-input-qdl"
+            placeholder="Enter YouTube video URL here"
+            style="width: 70%"
+            value="https://www.youtube.com/playlist?list=PL-CysCjxctyfRA37UaV_6fiv4VxNba56n"
+          />
+
+          <button onclick="quickDownload()" style="width: 28%">Quick Download</button>
+        </div>
+
+        <div class="row-container">
+          <div style="display: flex; flex-direction: column; text-align: start">
+            <p id="loaded_values"></p>
+            <p id="download_finished"></p>
           </div>
         </div>
       </div>
