@@ -1,14 +1,10 @@
-from flask import Flask, request, Response, jsonify, render_template
+from flask import Flask, request, Response, jsonify, render_template, session
 import webbrowser
 from flask import send_from_directory
 import os
-import time
 import yt_dlp
 import threading
 import re
-
-
-# from logic import load_playlist, download_url, progress_data
 
 app = Flask(__name__)
 
@@ -25,7 +21,15 @@ def load_data():
     data = request.json
     url = data.get('url')
     result = load_playlist(url)
+    session['loaded_data'] = result
     return jsonify(result)
+
+@app.route('/reload', methods=['POST'])
+def reload_data():
+    data = session.get('loaded_data')  # safely fetch with default None
+    if data is None:
+        return jsonify({'error': 'No data loaded yet'}), 404
+    return jsonify(data)
 
 def handle_download(item, format, dest_folder):
     print("Started download for " + str(item['id']))
@@ -92,7 +96,6 @@ def load_playlist(playlist_url):
     return urls
     
 progress_data = {}
-counter_lock = threading.Lock()
 def create_hook(item):  
     def progress_hook(d):
         if d['status'] == 'downloading':
@@ -123,19 +126,18 @@ def download_url(item, format, dest_folder):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
-            with counter_lock:
-                progress_data[item['id']] = '0.0%'
-                dl_result = ydl.download(item['url'])
-            
-                if(dl_result == 0):
-                    progress_data[item['id']] = '100.0%'
-                else:
-                    progress_data[item['id']] = 'FAILED'
+            progress_data[item['id']] = '0.0%'
+            dl_result = ydl.download(item['url'])
+        
+            if(dl_result == 0):
+                progress_data[item['id']] = '100.0%'
+            else:
+                progress_data[item['id']] = 'FAILED'
                 
         except Exception as e:
             print(f"Failed to download: {e}")
             pass
 
 if __name__ == "__main__":
-    # Timer(1, open_browser).start()
+    app.secret_key = os.urandom(16)
     app.run(debug=True)
