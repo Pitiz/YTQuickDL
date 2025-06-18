@@ -1,6 +1,5 @@
-from flask import Flask, request, Response, jsonify, render_template
+from flask import Flask, request, Response, jsonify, render_template, send_from_directory
 import webbrowser
-from flask import send_from_directory
 import os
 import yt_dlp
 import threading
