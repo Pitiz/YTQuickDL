@@ -201,7 +201,6 @@ function processUrlsSequentially(urls) {
     processNext();
 }
 
-
 function selectAll() {
     const format = getSelectedFormat();
     const tableBody = $("#table-body");
