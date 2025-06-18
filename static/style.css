@@ -18,7 +18,7 @@ button {
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 0 6px #ffffffab;
+    box-shadow: 0 0 6px #54439a;
     transition: all .3s ease
 }
 
@@ -38,7 +38,7 @@ select {
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 0 6px #ffffffab;
+    box-shadow: 0 0 6px #54439a;
     transition: all .3s ease
 }
 
@@ -93,7 +93,7 @@ table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 20px;
-    box-shadow: 0 0 12px #ffffff
+    box-shadow: 0 0 12px #181429;
 }
 
 th,
@@ -137,7 +137,7 @@ button:hover {
     margin-bottom: 5px;
     cursor: pointer;
     font-size: 16px;
-    padding: 12px
+    padding: 10px
 }
 
 .control input {
@@ -163,12 +163,12 @@ button:hover {
 }
 
 .control input:checked~.control_indicator {
-    background: #b570ff
+    background: #54439a
 }
 
 .control:hover input:not([disabled]):checked~.control_indicator,
 .control input:checked:focus~.control_indicator {
-    background: #0e6647d
+    background: #b570ff
 }
 
 .control input:disabled~.control_indicator {
@@ -227,9 +227,15 @@ button:hover {
 #loader {
     width: 45px;
     aspect-ratio: .75;
-    --c: no-repeat linear-gradient(#4d466b 0 0);
+    --c: no-repeat linear-gradient(#54439a 0 0);
     background: var(--c) 0% 50%, var(--c) 50% 50%, var(--c) 100% 50%;
     animation: l7 1s infinite linear alternate
+}
+
+#fixed-container {
+    position: sticky;
+    top: 12px;
+    z-index: 1;
 }
 
 @keyframes l7 {
@@ -284,6 +290,14 @@ button:hover {
     margin: auto 0;
     color: #215924;
     user-select: none
+}
+
+#download_button .download-available{
+    background-color: #21592473;
+}
+
+#download_button .download-available:hover{
+    background-color: #215924;
 }
 
 .row-container {

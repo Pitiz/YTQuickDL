@@ -1,10 +1,3 @@
-function CheckBoxesChecked() {
-    if (document.querySelectorAll(".control input:checked").length > 0)
-        $("#download_button").css("background", "#21592473");
-    else
-        $("#download_button").css("background", "#231d3e73");
-}
-
 var dataLoaded = false
 
 async function loadData() {
@@ -40,6 +33,14 @@ async function loadData() {
     }
 }
 
+function generateGUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 function draw_table(data) {
     const tableBody = $("#table-body");
     tableBody.html(""); // Clear previous results
@@ -48,11 +49,11 @@ function draw_table(data) {
         const row = $("<tr></tr>");
 
         const checkboxCell = $("<td></td>");
-        checkboxCell.css("display", "flex");
-        checkboxCell.css("width", "auto");
+        checkboxCell.css("width", "0");
         checkboxCell.css("justify-content", "center");
 
         const checkBoxLabel = $("<label></label>");
+        checkBoxLabel.css("margin", "auto");
         checkBoxLabel.addClass("control");
         checkBoxLabel.addClass("control-checkbox");
 
@@ -60,31 +61,50 @@ function draw_table(data) {
         controlIndicator.addClass("control_indicator");
 
         const checkbox = $("<input>", {
+            id : 'checkbox_'+index,
             type: 'checkbox',
         });
 
-        checkbox.attr("data-id", index);
+        let guid = generateGUID();
+
+        checkbox.attr("data-id", guid);
         checkbox.attr("data-url", item.url);
         checkbox.attr("data-title", item.title);
 
-        checkbox.on("change", function () {
-            CheckBoxesChecked();
-        });
-
         checkBoxLabel.append(checkbox);
         checkBoxLabel.append(controlIndicator);
-
         checkboxCell.append(checkBoxLabel);
 
-        const titleCell = $("<td>").html(item.title);
-
-        const progressCell = $("<td>", {
-            id: "progress_" + index
+        const imageCell = $("<td>",{
+            width: 0
         });
+        
+        const image = $("<img>", {
+            width : 50,
+            height : 50
+        });
+        image.css("object-fit", "cover");
+        image.attr("src", item.image);
+
+        imageCell.append(image);
+
+        const titleCell = $("<td>");
+
+        const container = $("<div>");
+        container.css("display", "flex");
+        container.css("justify-content", "space-between");
+
+        const titleText = $("<p>").css("margin", 0).html(item.title);
+        const progressText = $("<p>").css("margin", 0).attr('id', "progress_" + guid);
+
+        container.append(titleText);
+        container.append(progressText);
+
+        titleCell.append(container);
 
         row.append(checkboxCell);
+        row.append(imageCell);
         row.append(titleCell);
-        row.append(progressCell);
 
         tableBody.append(row);
 
@@ -102,7 +122,7 @@ function getSelectedFormat() {
 
 async function sendDownloadRequest(urls, format) {
     try {
-        const response = fetch("/download", {
+        const response = fetch("/downloadPlaylist", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -116,6 +136,8 @@ async function sendDownloadRequest(urls, format) {
                 let parsed = JSON.parse(data);
                 if (parsed['status'] == "success")
                     $("#download_finished").html(parsed['message'])
+
+
             })
             .catch((error) => {
                 alert("Error:", error);
@@ -193,8 +215,27 @@ function selectAll() {
     for (const row of rows) {
         row.querySelector('input[type="checkbox"]').checked = true;
     }
+}
 
-    CheckBoxesChecked();
+function quickDownload() {
+    const url = $("#url-input-qdl").val();
+
+    const response = fetch("/downloadSingle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            url: url,
+        }),
+    })
+        .then((response) => response.text())
+        .then((data) => {
+            let parsed = JSON.parse(data);
+            if (parsed['status'] == "success")
+                $("#download_finished_qdl").html(parsed['message'])
+        })
+        .catch((error) => {
+            alert("Error:", error);
+        });
 }
 
 function downloadSelected() {
@@ -227,7 +268,7 @@ function downloadSelected() {
 }
 
 window.onbeforeunload = function () {
-    if(dataLoaded === false)
+    if (dataLoaded === false)
         return undefined
     return "Are you sure you want to leave? Data will be lost.";
 };

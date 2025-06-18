@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, jsonify, render_template, session
+from flask import Flask, request, Response, jsonify, render_template
 import webbrowser
 from flask import send_from_directory
 import os
@@ -7,6 +7,7 @@ import threading
 import re
 
 app = Flask(__name__)
+progress_data = {}
 
 @app.route('/')
 def home():
@@ -28,7 +29,7 @@ def handle_download(item, format, dest_folder):
     progress_data[item['id']] = '0.0%'
     download_url(item, format, dest_folder)
 
-@app.route('/download', methods=['POST'])
+@app.route('/downloadPlaylist', methods=['POST'])
 def download_urls():
     threads = []
     data = request.json
@@ -51,6 +52,7 @@ def download_urls():
     for t in threads:
         t.join()
         
+    progress_data.clear()
     return {'status': 'success', 'message': 'Download completed.'}, 200
 
 @app.route('/progress/<id>', methods=['GET'])
@@ -81,13 +83,12 @@ def load_playlist(playlist_url):
     for video in playlist_dict['entries']:
         urls.append({
             'url' : video['url'],
-            'title' : video['title']
+            'title' : video['title'],
+            'image' : video['thumbnails'][-1]['url']
         })
 
-    # print(f"Number of videos loaded from playlist: {len(urls)}")
     return urls
     
-progress_data = {}
 def create_hook(item):  
     def progress_hook(d):
         if d['status'] == 'downloading':
@@ -132,4 +133,5 @@ def download_url(item, format, dest_folder):
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(16)
-    app.run(debug=True)
+    open_browser()
+    app.run()

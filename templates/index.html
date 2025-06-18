@@ -26,12 +26,12 @@ __  __           ______      __            ____                      __         
             id="url-input"
             placeholder="Enter YouTube playlist URL here"
             style="width: 70%"
-            value="https://www.youtube.com/playlist?list=PL-CysCjxctyfRA37UaV_6fiv4VxNba56n"
+            value="https://www.youtube.com/playlist?list=PLYNlX-IPr14ZT2ly1X0y6-WS5Nxcd5_L3"
           />
           <button onclick="loadData()" style="width: 28%">Load</button>
         </div>
 
-        <div class="row-container">
+        <div class="row-container" id="fixed-container">
           <select name="format-select" id="format-select" style="width: 18%">
             <option value="mp3" selected>MP3</option>
             <option value="wav">WAV</option>
@@ -61,42 +61,16 @@ __  __           ______      __            ____                      __         
             <input type="text" id="dest_folder" value="Downloads" />
           </div>
         </div>
-      </div>
 
-      <div class="column-container">
-        <div class="row-container">
-          <input
-            type="text"
-            id="url-input-qdl"
-            placeholder="Enter YouTube video URL here"
-            style="width: 70%"
-            value="https://www.youtube.com/playlist?list=PL-CysCjxctyfRA37UaV_6fiv4VxNba56n"
-          />
+        <center>
+          <div id="loader" style="display: none"></div>
+        </center>
 
-          <button onclick="quickDownload()" style="width: 28%">Quick Download</button>
+        <div id="table-container" style="display: none">
+          <table>
+            <tbody id="table-body"></tbody>
+          </table>
         </div>
-
-        <div class="row-container">
-          <div style="display: flex; flex-direction: column; text-align: start">
-            <p id="loaded_values"></p>
-            <p id="download_finished"></p>
-          </div>
-        </div>
-      </div>
-
-      <div id="loader" style="display: none"></div>
-
-      <div id="table-container" style="display: none">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 1px">Select</th>
-              <th>Title</th>
-              <th style="width: 85px">Download %</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
       </div>
     </center>
   </body>
