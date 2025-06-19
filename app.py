@@ -1,4 +1,3 @@
-import urllib.parse
 from flask import Flask, request, Response, jsonify, render_template, send_from_directory
 import webbrowser
 import os
@@ -37,9 +36,9 @@ def download_urls():
     urls = data.get('urls')
     format = data.get('format')
 
-    dest_folder = data.get('dest_folder')
+    dest_folder = "Downloads/" + data.get('dest_folder')
 
-    if not dest_folder:
+    if not dest_folder or dest_folder == "Downloads":
         dest_folder = "Downloads"
         
     if not urls or not format:
@@ -149,4 +148,4 @@ def download_url(item, format, dest_folder):
 if __name__ == "__main__":
     app.secret_key = os.urandom(16)
     open_browser()
-    app.run(debug=True)
+    app.run()
