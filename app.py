@@ -1,9 +1,11 @@
+import urllib.parse
 from flask import Flask, request, Response, jsonify, render_template, send_from_directory
 import webbrowser
 import os
 import yt_dlp
 import threading
 import re
+from urllib.parse import urlparse, parse_qs
 
 app = Flask(__name__)
 progress_data = {}
@@ -67,24 +69,38 @@ def progress_stream(id):
 
 def open_browser():
       webbrowser.open_new("http://127.0.0.1:5000")
-      
+    
 def load_playlist(playlist_url):
+    def clean_youtube_url(url):
+        parsed = urlparse(url)
+        qs = parse_qs(parsed.query)
+        video_id = qs.get('v', [None])[0]
+        return f"https://www.youtube.com/watch?v={video_id}" if video_id else url
+
+    is_single_video = '/watch' in playlist_url or '/shorts' in playlist_url
+
     ydl_opts = {
         'quiet': True,
         'extract_flat': True,
+        'noplaylist': is_single_video
     }
 
+    urls = []
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        playlist_dict = ydl.extract_info(playlist_url, download=False)
+        info_dict = ydl.extract_info(
+            clean_youtube_url(playlist_url) if is_single_video else playlist_url, 
+            download=False
+        )
 
-    urls = list()
+        entries = [info_dict] if is_single_video else info_dict['entries']
 
-    for video in playlist_dict['entries']:
-        urls.append({
-            'url' : video['url'],
-            'title' : video['title'],
-            'image' : video['thumbnails'][-1]['url']
-        })
+        for video in entries:
+            urls.append({
+                'url': video['original_url'] if is_single_video else video['url'],
+                'title': video['title'],
+                'image': video['thumbnails'][-1]['url']
+            })
 
     return urls
     
@@ -133,4 +149,4 @@ def download_url(item, format, dest_folder):
 if __name__ == "__main__":
     app.secret_key = os.urandom(16)
     open_browser()
-    app.run()
+    app.run(debug=True)
